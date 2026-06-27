@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding Health Tracker — AI CSM Tool</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0f0f11;
+    --surface:  #17171a;
+    --border:   #2a2a2f;
+    --text:     #e8e8ec;
+    --muted:    #7a7a85;
+    --accent:   #7c6af7;
+    --accent2:  #a89df7;
+    --green:    #3ecf8e;
+    --amber:    #f59e0b;
+    --red:      #f46b6b;
+    --mono:     'DM Mono', monospace;
+    --sans:     'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+  }
+  .logo span { color: var(--muted); font-weight: 400; }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: #1e1b3a;
+    color: var(--accent2);
+    border: 1px solid #3d3580;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 720px;
+    margin: 64px auto 0;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto 48px;
+  }
+
+  /* FORM */
+  .form-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .form-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 16px;
+  }
+  .form-section h2 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  label .req { color: var(--accent); margin-left: 2px; }
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus { border-color: var(--accent); }
+  select option { background: #1a1a1f; }
+  textarea { min-height: 80px; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* SLIDER */
+  .slider-wrap { display: flex; align-items: center; gap: 12px; }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  .slider-val {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent2);
+    width: 28px;
+    text-align: right;
+  }
+
+  /* SUBMIT */
+  .submit-wrap { text-align: center; margin-top: 24px; }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 40px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: -0.01em;
+  }
+  button:hover { opacity: 0.88; transform: translateY(-1px); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* LOADING */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .loading.active { display: block; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { color: var(--muted); font-size: 14px; }
+
+  /* RESULTS */
+  .results {
+    display: none;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .results.active { display: block; }
+
+  .score-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 32px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .score-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .score-block.green::before { background: var(--green); }
+  .score-block.amber::before { background: var(--amber); }
+  .score-block.red::before   { background: var(--red); }
+
+  .score-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .score-number {
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: var(--mono);
+    letter-spacing: -0.04em;
+    margin-bottom: 12px;
+  }
+  .score-block.green .score-number { color: var(--green); }
+  .score-block.amber .score-number { color: var(--amber); }
+  .score-block.red   .score-number { color: var(--red); }
+
+  .risk-pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+  .risk-pill.green { background: #0f2e22; color: var(--green); }
+  .risk-pill.amber { background: #2d1f00; color: var(--amber); }
+  .risk-pill.red   { background: #2e0f0f; color: var(--red); }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 16px;
+  }
+  .result-card h3 {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .result-card p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .actions-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .actions-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .actions-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 10px 24px;
+    margin-top: 8px;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); opacity: 1; }
+
+  .built-by {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .built-by a { color: var(--accent2); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    .hero { margin-top: 40px; }
+    .form-section { padding: 24px 20px; }
+    .result-card { padding: 24px 20px; }
+    .row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CSM Toolkit <span>/ Onboarding Health</span></div>
+  <div class="badge">Powered by Claude AI</div>
+</header>
+
+<div class="hero">
+  <h1>Know which accounts need you <em>before they ask</em></h1>
+  <p>Enter your customer's onboarding details and get an AI-generated health score, churn risk flag, and a prioritised action plan — in seconds.</p>
+</div>
+
+<div class="form-card" id="formSection">
+  <div class="form-section">
+    <h2>Account Details</h2>
+    <div class="row-2">
+      <div class="field">
+        <label>Company Name <span class="req">*</span></label>
+        <input type="text" id="company" placeholder="e.g. Acme Corp">
+      </div>
+      <div class="field">
+        <label>Industry</label>
+        <input type="text" id="industry" placeholder="e.g. SaaS, Fintech, E-commerce">
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label>Plan / Tier</label>
+        <select id="plan">
+          <option value="">Select plan</option>
+          <option>Starter</option>
+          <option>Growth</option>
+          <option>Pro</option>
+          <option>Enterprise</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Days Since Onboarding Started</label>
+        <input type="text" id="daysSince" placeholder="e.g. 14">
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Engagement Signals</h2>
+    <div class="field">
+      <label>Product Usage Frequency</label>
+      <select id="usage">
+        <option value="">Select frequency</option>
+        <option>Daily</option>
+        <option>Several times a week</option>
+        <option>Once a week</option>
+        <option>Less than once a week</option>
+        <option>Barely logged in</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Key Features Adopted (out of 10)</label>
+      <div class="slider-wrap">
+        <input type="range" id="featuresSlider" min="0" max="10" value="5"
+               oninput="document.getElementById('featuresVal').textContent = this.value">
+        <div class="slider-val" id="featuresVal">5</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Number of Support Tickets Raised</label>
+      <input type="text" id="tickets" placeholder="e.g. 3">
+    </div>
+    <div class="field">
+      <label>Last Contact with CSM</label>
+      <select id="lastContact">
+        <option value="">Select timeframe</option>
+        <option>This week</option>
+        <option>Last week</option>
+        <option>2–3 weeks ago</option>
+        <option>Over a month ago</option>
+        <option>No contact yet</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>Qualitative Notes</h2>
+    <div class="field">
+      <label>Champion / Main Contact Sentiment</label>
+      <select id="sentiment">
+        <option value="">Select sentiment</option>
+        <option>Very enthusiastic</option>
+        <option>Positive but passive</option>
+        <option>Neutral / hard to read</option>
+        <option>Showing frustration</option>
+        <option>Unresponsive</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Any blockers or concerns raised?</label>
+      <textarea id="blockers" placeholder="e.g. Integration with their CRM is taking longer than expected. IT team not yet involved."></textarea>
+    </div>
+    <div class="field">
+      <label>Additional context (optional)</label>
+      <textarea id="context" placeholder="e.g. They expanded their team last month. QBR is scheduled for next week."></textarea>
+    </div>
+  </div>
+
+  <div class="submit-wrap">
+    <button id="analyseBtn" onclick="analyse()">Analyse Account Health</button>
+  </div>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>Analysing account signals...</p>
+</div>
+
+<div class="results" id="results">
+  <div class="score-block" id="scoreBlock">
+    <div class="score-label">Onboarding Health Score</div>
+    <div class="score-number" id="scoreNumber">—</div>
+    <div class="risk-pill" id="riskPill">Calculating...</div>
+  </div>
+
+  <div class="result-card">
+    <h3>Health Summary</h3>
+    <p id="summaryText"></p>
+  </div>
+
+  <div class="result-card">
+    <h3>Recommended Actions</h3>
+    <ul class="actions-list" id="actionsList"></ul>
+  </div>
+
+  <div class="result-card">
+    <h3>Suggested QBR / Check-in Talking Points</h3>
+    <ul class="actions-list" id="talkingPoints"></ul>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="reset-btn" onclick="reset()">Analyse another account</button>
+  </div>
+
+  <div class="built-by">
+    Built by Maryam Egbeyemi &nbsp;·&nbsp; Customer Success & Operations Consultant &nbsp;·&nbsp;
+    <a href="mailto:maryamegbeyemi@gmail.com">maryamegbeyemi@gmail.com</a>
+  </div>
+</div>
+
+<script>
+async function analyse() {
+  const company     = document.getElementById('company').value.trim();
+  const industry    = document.getElementById('industry').value.trim();
+  const plan        = document.getElementById('plan').value;
+  const daysSince   = document.getElementById('daysSince').value.trim();
+  const usage       = document.getElementById('usage').value;
+  const features    = document.getElementById('featuresVal').textContent;
+  const tickets     = document.getElementById('tickets').value.trim();
+  const lastContact = document.getElementById('lastContact').value;
+  const sentiment   = document.getElementById('sentiment').value;
+  const blockers    = document.getElementById('blockers').value.trim();
+  const context     = document.getElementById('context').value.trim();
+
+  if (!company) { alert('Please enter a company name.'); return; }
+
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('analyseBtn').disabled = true;
+
+  const prompt = `You are a senior Customer Success Manager. Analyse the following onboarding data for a SaaS account and return a JSON object only — no markdown, no explanation, just the raw JSON.
+
+Account data:
+- Company: ${company || 'Not provided'}
+- Industry: ${industry || 'Not provided'}
+- Plan: ${plan || 'Not provided'}
+- Days since onboarding started: ${daysSince || 'Not provided'}
+- Product usage frequency: ${usage || 'Not provided'}
+- Key features adopted (out of 10): ${features}
+- Support tickets raised: ${tickets || 'Not provided'}
+- Last CSM contact: ${lastContact || 'Not provided'}
+- Champion sentiment: ${sentiment || 'Not provided'}
+- Blockers / concerns: ${blockers || 'None noted'}
+- Additional context: ${context || 'None'}
+
+Return this exact JSON structure:
+{
+  "score": <integer 0-100>,
+  "risk": <"Low" | "Medium" | "High">,
+  "summary": "<2-3 sentence plain-English summary of this account's health and the key reasons behind the score>",
+  "actions": ["<action 1>", "<action 2>", "<action 3>", "<action 4>"],
+  "talkingPoints": ["<point 1>", "<point 2>", "<point 3>"]
+}`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const raw = data.content.map(i => i.text || "").join("").trim();
+    const clean = raw.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(clean);
+
+    renderResults(parsed);
+  } catch (err) {
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('analyseBtn').disabled = false;
+    alert('Something went wrong. Please try again.');
+    console.error(err);
+  }
+}
+
+function renderResults(data) {
+  document.getElementById('loading').classList.remove('active');
+
+  const score = data.score;
+  const risk  = data.risk;
+
+  const tier = score >= 70 ? 'green' : score >= 40 ? 'amber' : 'red';
+
+  const block = document.getElementById('scoreBlock');
+  block.className = 'score-block ' + tier;
+
+  document.getElementById('scoreNumber').textContent = score;
+
+  const pill = document.getElementById('riskPill');
+  pill.textContent = risk + ' Risk';
+  pill.className = 'risk-pill ' + tier;
+
+  document.getElementById('summaryText').textContent = data.summary;
+
+  const actionsList = document.getElementById('actionsList');
+  actionsList.innerHTML = '';
+  (data.actions || []).forEach(a => {
+    const li = document.createElement('li');
+    li.textContent = a;
+    actionsList.appendChild(li);
+  });
+
+  const tpList = document.getElementById('talkingPoints');
+  tpList.innerHTML = '';
+  (data.talkingPoints || []).forEach(t => {
+    const li = document.createElement('li');
+    li.textContent = t;
+    tpList.appendChild(li);
+  });
+
+  document.getElementById('results').classList.add('active');
+}
+
+function reset() {
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('analyseBtn').disabled = false;
+  document.getElementById('scoreNumber').textContent = '—';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
